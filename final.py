@@ -13,11 +13,12 @@ y_min = environ.observation_space.low[2]
 
 X_DIVISIONS = 20
 Y_DIVISIONS = 10
+POPULATION_SIZE = 20
+NUM_GENERATION = 40
+EPISODES_PER_EVAL = 4
 
 a = (x_max - x_min)/X_DIVISIONS
 b = (y_max - y_min)/Y_DIVISIONS
-
-EPISODES_PER_EVAL = 20
 
 def action_function(agent, observation):
 	x = observation[0]
@@ -52,7 +53,7 @@ def evaluate(agent):
 	        if done:
 	            print("Episode finished after {} timesteps".format(t+1))
 	            break
-	return -score
+	return score,
 
 
 'The following is a test for "evaluate" function'
@@ -63,3 +64,78 @@ for i in range((X_DIVISIONS+1)*(Y_DIVISIONS+1)):
 	test.append(randint(0, 1))
 evaluate(test)
 '''
+
+from deap import base, creator
+creator.create("FitnessMax", base.Fitness, weights=(1.0,))
+creator.create("Individual", list, fitness=creator.FitnessMax)
+
+import random
+from deap import tools
+
+IND_SIZE = (X_DIVISIONS+1)*(Y_DIVISIONS+1)
+
+toolbox = base.Toolbox()
+toolbox.register("attribute", random.randint, 0, 1)
+toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.attribute, n=IND_SIZE)
+toolbox.register("population", tools.initRepeat, list, toolbox.individual)
+
+toolbox.register("mate", tools.cxTwoPoint)
+toolbox.register("mutate", tools.mutGaussian, mu=0, sigma=1, indpb=0.1)
+toolbox.register("select", tools.selTournament, tournsize=3)
+toolbox.register("evaluate", evaluate)
+
+def main():
+    pop = toolbox.population(n=POPULATION_SIZE)
+    CXPB, MUTPB, NGEN = 0.5, 0.2, NUM_GENERATION
+
+    # Evaluate the entire population
+    fitnesses = map(toolbox.evaluate, pop)
+    for ind, fit in zip(pop, fitnesses):
+        ind.fitness.values = fit
+
+    for g in range(NGEN):
+        # Select the next generation individuals
+        offspring = toolbox.select(pop, len(pop))
+        # Clone the selected individuals
+        offspring = map(toolbox.clone, offspring)
+
+        # Apply crossover and mutation on the offspring
+        for child1, child2 in zip(offspring[::2], offspring[1::2]):
+            if random.random() < CXPB:
+                toolbox.mate(child1, child2)
+                del child1.fitness.values
+                del child2.fitness.values
+
+        for mutant in offspring:
+            if random.random() < MUTPB:
+                toolbox.mutate(mutant)
+                del mutant.fitness.values
+
+        # Evaluate the individuals with an invalid fitness
+        invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
+        fitnesses = map(toolbox.evaluate, invalid_ind)
+        for ind, fit in zip(invalid_ind, fitnesses):
+            ind.fitness.values = fit
+
+        # The population is entirely replaced by the offspring
+        pop[:] = offspring
+
+    return pop
+'''************************************'''
+solution = main()
+score = 0
+env = gym.make('CartPole-v0')
+env.monitor.start('/home/koustubh/Desktop/EDO/cartpole-experiment-1', force=True)
+for i_episode in range(EPISODES_PER_EVAL):
+    observation = env.reset()
+    for t in range(100):
+        env.render()
+        action = action_function(solution[0], observation)
+        observation, reward, done, info = env.step(action)
+        score = score + reward
+        if done:
+            print("Episode finished after {} timesteps".format(t+1))
+            break
+env.monitor.close()
+
+print score

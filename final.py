@@ -11,11 +11,11 @@ x_min = environ.observation_space.low[0]
 y_max = environ.observation_space.high[2]
 y_min = environ.observation_space.low[2]
 
-X_DIVISIONS = 20
-Y_DIVISIONS = 10
-POPULATION_SIZE = 20
-NUM_GENERATION = 40
-EPISODES_PER_EVAL = 4
+X_DIVISIONS = 200
+Y_DIVISIONS = 100
+POPULATION_SIZE = 50
+NUM_GENERATION = 400
+EPISODES_PER_EVAL = 10
 
 a = (x_max - x_min)/X_DIVISIONS
 b = (y_max - y_min)/Y_DIVISIONS
@@ -125,7 +125,7 @@ def main():
 solution = main()
 score = 0
 env = gym.make('CartPole-v0')
-env.monitor.start('/home/koustubh/Desktop/EDO/cartpole-experiment-1', force=True)
+env.monitor.start('/home/koustubh/Desktop/EDO/cartpole-experiment-1-high_res', force=True)
 for i_episode in range(EPISODES_PER_EVAL):
     observation = env.reset()
     for t in range(100):

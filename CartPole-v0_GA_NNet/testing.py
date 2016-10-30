@@ -6,7 +6,7 @@ import os
 
 HIDDEN_LAYER_SIZE = 10
 POPULATION_SIZE = 50
-LOCATION = "cartpole-experiment-1-high_res-run2"
+LOCATION = "cartpole_run2"
 
 
 

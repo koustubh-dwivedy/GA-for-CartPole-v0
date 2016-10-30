@@ -86,6 +86,7 @@ def evaluate(agent):
 	        score = score + reward
 	        if done:
 	            break
+	env.close()
 	print("Episode finished after {} timesteps".format(t+1))
 	print "score: "
 	print score

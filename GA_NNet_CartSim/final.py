@@ -62,8 +62,8 @@ def evaluate(agent):
 	        observation, reward, done, info = env.step(action)
 	        score = score + reward
 	        if done:
-	            print("Episode finished after {} timesteps".format(t+1))
 	            break
+	print("Episode finished after {} timesteps".format(t+1))
 	print "score: "
 	print score
 	return score,
@@ -147,8 +147,8 @@ for i_episode in range(EPISODES_PER_EVAL):
         observation, reward, done, info = env.step(action)
         score = score + reward
         if done:
-            print("Episode finished after {} timesteps".format(t+1))
             break
+    print("Episode finished after {} timesteps".format(t+1))
 env.monitor.close()
 
 print "SOLUTION: "

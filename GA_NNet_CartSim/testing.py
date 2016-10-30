@@ -4,7 +4,7 @@ import math
 import os
 
 
-
+HIDDEN_LAYER_SIZE = 10
 POPULATION_SIZE = 50
 LOCATION = "cartpole-experiment-1-high_res-run2"
 
@@ -44,20 +44,18 @@ def action_function(agent, observation):
 
 
 os.chdir(LOCATION)
-
-solution = main()
-score = 0
+solution = np.loadtxt('solution')
 for i in range(POPULATION_SIZE):
-	env = gym.make('CartPole-v0')
-	observation = env.reset()
-	for t in range(1000):
+    score = 0
+    env = gym.make('CartPole-v0')
+    observation = env.reset()
+    for t in range(1000):
     	env.render()
     	action = action_function(solution[i], observation)
     	observation, reward, done, info = env.step(action)
     	score = score + reward
     	if done:
-        	print("Episode finished after {} timesteps".format(t+1))
-        	break
-
-print "final_score: "
-print score
+    		break
+    print("Episode finished after {} timesteps".format(t+1))
+    print "Score: "
+    print score

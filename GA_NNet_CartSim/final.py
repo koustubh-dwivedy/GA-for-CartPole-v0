@@ -159,5 +159,5 @@ print "final_score: "
 print score
 
 import sys
-sys.stdout = open('solution', 'w')
+sys.stdout = open('cartpole-experiment-1-high_res-run2/solution', 'w')
 print solution

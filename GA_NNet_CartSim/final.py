@@ -17,7 +17,7 @@ import numpy as np
 HIDDEN_LAYER_SIZE = 10
 POPULATION_SIZE = 50
 NUM_GENERATION = 400
-EPISODES_PER_EVAL = 10
+EPISODES_PER_EVAL = 2
 
 def sigmoid(a):
     return 1.0/(1 + pow(math.e, -a))
@@ -56,7 +56,7 @@ def evaluate(agent):
 	score = 0
 	for i_episode in range(EPISODES_PER_EVAL):
 	    observation = env.reset()
-	    for t in range(100):
+	    for t in range(1000):
 	        env.render()
 	        action = action_function(agent, observation)
 	        observation, reward, done, info = env.step(action)
@@ -138,10 +138,10 @@ def main():
 solution = main()
 score = 0
 env = gym.make('CartPole-v0')
-env.monitor.start('/home/koustubh/Desktop/EDO/cartpole-experiment-1-high_res', force=True)
+env.monitor.start('/home/koustubh/Desktop/EDO/GA_NNet_CartSim/cartpole-experiment-1-high_res-run2', force=True)
 for i_episode in range(EPISODES_PER_EVAL):
     observation = env.reset()
-    for t in range(100):
+    for t in range(1000):
         env.render()
         action = action_function(solution[0], observation)
         observation, reward, done, info = env.step(action)
@@ -151,5 +151,13 @@ for i_episode in range(EPISODES_PER_EVAL):
             break
 env.monitor.close()
 
+print "SOLUTION: "
+print solution
+print "SOLUTION END"
+
 print "final_score: "
 print score
+
+import sys
+sys.stdout = open('solution', 'w')
+print solution

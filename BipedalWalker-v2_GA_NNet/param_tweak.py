@@ -1,10 +1,6 @@
-'This is the code which uses Genetic Algorithm to train the Neural Network which balances a cart'
-'''
-The configuration of NNet is:
-Input Layer: 4 nodes
-Hidden Layer: 10 nodes (chosen arbitrarily)
-Output Layer: 1 node
-'''
+'Use this to tweak the following:'
+'Number of hidden layers; which changes:'
+'Range of values of weights for reasonable value of output'
 
 import gym
 import math
@@ -16,9 +12,10 @@ import numpy as np
 
 WEIGHT_RANGE = 0.02
 HIDDEN_LAYER_SIZE = 100
+EPISODES_PER_EVAL = 5
+
 POPULATION_SIZE = 50
 NUM_GENERATION = 400
-EPISODES_PER_EVAL = 2
 OBSERVATION_SPACE_DIM = 24
 ACTION_SPACE_DIM = 4
 
@@ -113,7 +110,7 @@ from deap import tools
 IND_SIZE = (HIDDEN_LAYER_SIZE*(OBSERVATION_SPACE_DIM+1)) + ACTION_SPACE_DIM*(HIDDEN_LAYER_SIZE + 1)
 
 toolbox = base.Toolbox()
-toolbox.register("attribute", random.uniform, -WEIGHT_RANGE, WEIGHT_RANGE) #IDENTIFY USING param_tweak.py
+toolbox.register("attribute", random.uniform, -WEIGHT_RANGE, WEIGHT_RANGE) #(-0.2, 0.2) have been arrived using analysis of neural net values
 toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.attribute, n=IND_SIZE)
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
@@ -160,31 +157,33 @@ def main():
 
     return pop
 '''************************************'''
-solution = main()
 score = 0
+obs = []
 env = gym.make('BipedalWalker-v2')
-env.monitor.start('/home/koustubh/Desktop/EDO/BipedalWalker-v2_GA_NNet/bipedalwalker_run1', force=True)
 for i_episode in range(EPISODES_PER_EVAL):
     observation = env.reset()
     for t in range(100):
         env.render()
-	action = action_function(solution[0], observation)
+        action = env.action_space.sample()
         observation, reward, done, info = env.step(action)
+        obs.append(observation)
         score = score + reward
         if done:
             break
     print("Episode finished after {} timesteps".format(t+1))
-env.monitor.close()
 obs = np.array(obs)
-print sum(obs)/(obs.shape[0])
+ob = sum(obs)/(obs.shape[0])
+print ' '
+print ' '
+print "***********************OBSERVATIONS***********************"
+print ob
 
-print "SOLUTION: "
-print solution
-print "SOLUTION END"
+print ' '
+print ' '
+print "***********************ACTION", "WEIGHT=", WEIGHT_RANGE, "***********************"
+print action_function([WEIGHT_RANGE]*IND_SIZE, ob)
 
-print "final_score: "
-print score
-
-import sys
-sys.stdout = open('bipedalwalker_run1/solution', 'w')
-print solution
+print ' '
+print ' '
+print "***********************ACTION", "WEIGHT=", -WEIGHT_RANGE, "***********************"
+print action_function([-WEIGHT_RANGE]*IND_SIZE, ob)

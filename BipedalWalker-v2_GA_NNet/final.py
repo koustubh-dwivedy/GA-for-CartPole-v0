@@ -17,7 +17,7 @@ import numpy as np
 HIDDEN_LAYER_SIZE = 30
 POPULATION_SIZE = 50
 NUM_GENERATION = 400
-EPISODES_PER_EVAL = 20
+EPISODES_PER_EVAL = 2
 OBSERVATION_SPACE_DIM = 24
 ACTION_SPACE_DIM = 4
 
@@ -112,7 +112,7 @@ from deap import tools
 IND_SIZE = (HIDDEN_LAYER_SIZE*(OBSERVATION_SPACE_DIM+1)) + ACTION_SPACE_DIM*(HIDDEN_LAYER_SIZE + 1)
 
 toolbox = base.Toolbox()
-toolbox.register("attribute", random.random)
+toolbox.register("attribute", random.uniform, -0.2, 0.2) #(-0.2, 0.2) have been arrived using analysis of neural net values
 toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.attribute, n=IND_SIZE)
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
@@ -159,19 +159,16 @@ def main():
 
     return pop
 '''************************************'''
-'''solution = main()'''
+solution = main()
 score = 0
 env = gym.make('BipedalWalker-v2')
-obs = []
 env.monitor.start('/home/koustubh/Desktop/EDO/BipedalWalker-v2_GA_NNet/bipedalwalker_run1', force=True)
 for i_episode in range(EPISODES_PER_EVAL):
     observation = env.reset()
     for t in range(100):
         env.render()
-        '''action = action_function(solution[0], observation)'''
-	action = env.action_space.sample()
+	action = action_function(solution[0], observation)
         observation, reward, done, info = env.step(action)
-	obs.append(observation)
         score = score + reward
         if done:
             break

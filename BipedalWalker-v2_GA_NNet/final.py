@@ -17,7 +17,7 @@ import numpy as np
 HIDDEN_LAYER_SIZE = 30
 POPULATION_SIZE = 50
 NUM_GENERATION = 400
-EPISODES_PER_EVAL = 2
+EPISODES_PER_EVAL = 20
 OBSERVATION_SPACE_DIM = 24
 ACTION_SPACE_DIM = 4
 
@@ -159,21 +159,26 @@ def main():
 
     return pop
 '''************************************'''
-solution = main()
+'''solution = main()'''
 score = 0
 env = gym.make('BipedalWalker-v2')
+obs = []
 env.monitor.start('/home/koustubh/Desktop/EDO/BipedalWalker-v2_GA_NNet/bipedalwalker_run1', force=True)
 for i_episode in range(EPISODES_PER_EVAL):
     observation = env.reset()
     for t in range(100):
         env.render()
-        action = action_function(solution[0], observation)
+        '''action = action_function(solution[0], observation)'''
+	action = env.action_space.sample()
         observation, reward, done, info = env.step(action)
+	obs.append(observation)
         score = score + reward
         if done:
             break
     print("Episode finished after {} timesteps".format(t+1))
 env.monitor.close()
+obs = np.array(obs)
+print sum(obs)/(obs.shape[0])
 
 print "SOLUTION: "
 print solution
